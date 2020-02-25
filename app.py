@@ -1,11 +1,12 @@
 import datetime as dt
+import pandas as pd
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify
 
-engine = create_engine("sqlite:///Resources/hawaii.sqlite?check_same_thread=False")
+engine = create_engine("sqlite:///C:/Repositories/Temp/Resources/hawaii.sqlite?check_same_thread=False")
 Base = automap_base()
 Base.prepare(engine, reflect=True)
 
@@ -15,6 +16,13 @@ Station = Base.classes.station
 session = Session(engine)
 
 app = Flask(__name__)
+@app.route("/")
+def default():
+    return f'Welcome!<br><a href="http://127.0.0.1:5000/api/v1.0/stations">Station Data</a>\
+            <br><a href="http://127.0.0.1:5000/api/v1.0/precipitation">Precipitation Data</a>\
+            <br><a href="http://127.0.0.1:5000/api/v1.0/<start>">Forward Data</a>\
+            <br><a href="http://127.0.0.1:5000/api/v1.0/tobs">Tobs Data</a>\
+            <br><a href="http://127.0.0.1:5000/api/v1.0/<start>/<end>">Start/End Data</a>'
 
 @app.route("/api/v1.0/stations")
 def stations():
@@ -103,7 +111,6 @@ def tempsStartEnd(start, end):
         tobs["TAVG"] = row[1]
         tobs["TMAX"] = row[2]
         startEndTobs.append(tobs)
-
     return jsonify(tobs)
 
 
