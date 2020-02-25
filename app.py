@@ -6,9 +6,7 @@ from sqlalchemy import create_engine, func
 from flask import Flask, jsonify
 
 engine = create_engine("sqlite:///Resources/hawaii.sqlite?check_same_thread=False")
-# reflect an existing database into a new model
 Base = automap_base()
-# reflect the tables
 Base.prepare(engine, reflect=True)
 
 Measurement = Base.classes.measurement
@@ -20,12 +18,10 @@ app = Flask(__name__)
 
 @app.route("/api/v1.0/stations")
 def stations():
-    # Query list of stations and counts
     results = session.query(Measurement.station, func.count(Measurement.station)).\
                 group_by(Measurement.station).\
                 order_by(func.count(Measurement.station).desc()).all()
 
-    # Convert the query results to a list of stations inside Dicitonary
     allStations=[]
     for row in results:
         stations = {}
@@ -37,11 +33,9 @@ def stations():
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    # Query all precipitation
     results = session.query(Measurement.date, Measurement.prcp).\
                 order_by(Measurement.date).all()
 
-    # Convert the query results to a Dictionary using date as the key and prcp as the value.
     allPrecip = []
     for precip in results:
         precipDict = {}
@@ -57,7 +51,6 @@ def tempsStart(start):
     results=session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
         filter(Measurement.date >= start).all()
 
-    # Convert the query results to a Dictionary using date as the key and tobs as the value.
     tobs=[]
     for row in results:
         tobsDict = {}
@@ -82,12 +75,10 @@ def tobs():
     
     queryDate = dt.date(lastYear, lastMonth, lastDay) - dt.timedelta(days=365)
     
-    # Query list of stations and counts
     results = session.query(Measurement.date, Measurement.tobs).\
                 filter(Measurement.date>=queryDate).\
                 order_by(Measurement.date).all()
 
-    # Convert the query results to a Dictionary using date as the key and tobs as the value.
     last12Tobs=[]
     for row in results:
         tobs = {}
@@ -105,7 +96,6 @@ def tempsStartEnd(start, end):
         filter(Measurement.date >= start).\
         filter(Measurement.date <= end).all()
     
-    # Convert the query results to a Dictionary using date as the key and tobs as the value.
     startEndTobs=[]
     for row in results:
         tobs = {}
